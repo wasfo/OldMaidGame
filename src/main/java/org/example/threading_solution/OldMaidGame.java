@@ -1,9 +1,12 @@
 package org.example.threading_solution;
+
 import org.example.card.Card;
 import org.example.card.CardUtils;
+
 import java.util.*;
 import java.util.stream.IntStream;
-import static org.example.card.CardUtils.*;
+
+import static org.example.card.CardUtils.sortCards;
 
 
 public class OldMaidGame {
@@ -29,7 +32,7 @@ public class OldMaidGame {
         return sum;
     }
 
-    private void setupGame() {
+    public void setupGame() {
         for (int i = 0; i < numOfPlayers; i++) {
             players.add(new Player("Player" + i));
         }
@@ -42,8 +45,7 @@ public class OldMaidGame {
                 .filter(entry -> entry.getValue().size() == 1).findFirst();
     }
 
-    public void startGame() {
-        setupGame();
+    public void startGame() throws InterruptedException {
 
         List<Thread> threads = new ArrayList<>();
 
@@ -53,18 +55,18 @@ public class OldMaidGame {
 
         for (int i = 0; i < numOfPlayers; i++) {
             threads.get(i).start();
+            Thread.sleep(100);
         }
 
         try {
             for (int i = 0; i < numOfPlayers; i++) {
-                System.out.println(players.get(i).getName() + " has finished playing.");
                 threads.get(i).join();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        System.out.println("Game Over!");
+
     }
 
     public void distributeCardsForPlayers() {
@@ -89,12 +91,24 @@ public class OldMaidGame {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
-        OldMaidGame oldMaidGame = new OldMaidGame(10);
+
+        OldMaidGame oldMaidGame = new OldMaidGame(4);
+
+        // System.out.println("AFTER GAME ---------------------------------");
+        oldMaidGame.setupGame();
         oldMaidGame.startGame();
-        System.out.println("Loser player is -> " + oldMaidGame.getLostPlayer().get());
 
+
+        for (Player player : players) {
+            System.out.print(player.getName());
+            System.out.println("  hand-->" + getPlayersHand().get(player.getName()));
+        }
+        System.out.println("Loser is -> " + oldMaidGame.getLostPlayer().get().getKey());
+
+
+        System.out.println("Game Over!");
     }
 
 }

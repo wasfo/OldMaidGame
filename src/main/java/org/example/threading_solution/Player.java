@@ -10,11 +10,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import static org.example.card.CardUtils.cardsMatch;
 import static org.example.card.CardUtils.removeAllPairs;
 
+
 public class Player implements Runnable {
     private final String name;
     static HashMap<String, List<Card>> playersHand = new HashMap<>();
-    private static final Lock lock = new ReentrantLock();
-    private static final Lock removePairsLock = new ReentrantLock();
+    private static final Object lock = new Object();
+    private static final Object removePairsLock = new Object();
 
     public Player(String name) {
         this.name = name;
@@ -32,13 +33,11 @@ public class Player implements Runnable {
     }
 
     private void playTurn() {
+
         synchronized (lock) {
+
             while (this != getCurrentPlayer()) {
                 try {
-//                    if (OldMaidGame.getRemainingCards() < 2) {
-//                        return;
-//                    }
-
                     lock.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -60,9 +59,7 @@ public class Player implements Runnable {
             nextTurn();
             lock.notifyAll();
 
-
         }
-
     }
 
     private static Player getCurrentPlayer() {
@@ -82,33 +79,16 @@ public class Player implements Runnable {
     public void run() {
 
         synchronized (removePairsLock) {
-            while (this.name != getCurrentPlayer().getName()) {
-                try {
-                    removePairsLock.wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            String name = getCurrentPlayer().getName();
             removeAllPairs(Player.playersHand.get(name));
-            nextTurn();
-            removePairsLock.notifyAll();
-        }
-
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
 
         while (OldMaidGame.getRemainingCards() > 2) {
             playTurn();
         }
-
-
     }
 
     public void addCardOrRemovePair(List<Card> playerHand, Card card) {
+
         for (int i = 0; i < playerHand.size(); i++) {
             if (cardsMatch(card, playerHand.get(i))) {
                 playerHand.remove(i);

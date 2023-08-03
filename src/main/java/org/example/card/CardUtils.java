@@ -57,16 +57,6 @@ public class CardUtils {
         return cards;
     }
 
-    static public void addCardOrRemovePair(List<Card> playerHand, Card card) {
-        for (int i = 0; i < playerHand.size(); i++) {
-            if (cardsMatch(card, playerHand.get(i))) {
-                playerHand.remove(i);
-                return;
-            }
-        }
-        playerHand.add(card);
-    }
-
 
     public static void shuffleCards(List<Card> cards) {
         Collections.shuffle(cards);
@@ -78,6 +68,7 @@ public class CardUtils {
             return Integer.compare(o1.getCardNumber().ordinal(), o2.getCardNumber().ordinal());
         }
     }
+
 
     public static class CardColorComparator implements Comparator<Card> {
         @Override

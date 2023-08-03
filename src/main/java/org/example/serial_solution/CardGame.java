@@ -71,7 +71,7 @@ public class CardGame {
     }
 
     public void playGame() {
-        // at the start of the game, players will throw their matching pairs
+
         for (Player player : players) {
             removeAllPairs(playersHand.get(player));
         }
