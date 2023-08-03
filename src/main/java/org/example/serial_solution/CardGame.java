@@ -1,7 +1,7 @@
-package org.example;
+package org.example.serial_solution;
 import org.example.card.Card;
 import org.example.card.CardUtils;
-import org.example.player.Player;
+import org.example.serial_solution.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package org.example.player;
+package org.example.serial_solution;
 
 import java.util.Objects;
 

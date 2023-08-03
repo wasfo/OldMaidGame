@@ -1,5 +1,7 @@
-package org.example;
+package org.example.serial_solution;
 
+
+import org.example.serial_solution.CardGame;
 
 public class Main {
     public static void main(String[] args) {
