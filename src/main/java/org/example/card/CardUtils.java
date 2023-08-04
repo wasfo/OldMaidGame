@@ -21,6 +21,7 @@ public class CardUtils {
             }
         }
     }
+
     public static List<Card> getPackOfCards() {
         List<Card> cards = new ArrayList<>();
 

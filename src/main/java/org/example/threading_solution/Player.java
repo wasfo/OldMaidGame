@@ -1,11 +1,8 @@
 package org.example.threading_solution;
-
 import org.example.card.Card;
-
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.example.card.CardUtils.cardsMatch;
 import static org.example.card.CardUtils.removeAllPairs;
@@ -13,7 +10,7 @@ import static org.example.card.CardUtils.removeAllPairs;
 
 public class Player implements Runnable {
     private final String name;
-    static HashMap<String, List<Card>> playersHand = new HashMap<>();
+    static ConcurrentHashMap<String, List<Card>> playersHand = new ConcurrentHashMap<>();
     private static final Object lock = new Object();
     private static final Object removePairsLock = new Object();
 
@@ -54,7 +51,10 @@ public class Player implements Runnable {
             }
 
             Card drawnCard = drawCardFrom(prevPlayer);
-            addCardOrRemovePair(Player.playersHand.get(currentPlayer.getName()), drawnCard);
+            if(!removePair(Player.playersHand.get(currentPlayer.getName()),drawnCard)){
+                addCardToHand(Player.playersHand.get(currentPlayer.getName()),drawnCard);
+            }
+
 
             nextTurn();
             lock.notifyAll();
@@ -85,16 +85,20 @@ public class Player implements Runnable {
         while (OldMaidGame.getRemainingCards() > 2) {
             playTurn();
         }
+
     }
 
-    public void addCardOrRemovePair(List<Card> playerHand, Card card) {
-
+    //this method removes pair if it exists
+    public boolean removePair(List<Card> playerHand, Card card){
         for (int i = 0; i < playerHand.size(); i++) {
             if (cardsMatch(card, playerHand.get(i))) {
                 playerHand.remove(i);
-                return;
+                return true;
             }
         }
+        return false;
+    }
+    public void addCardToHand(List<Card> playerHand, Card card) {
         playerHand.add(card);
     }
 

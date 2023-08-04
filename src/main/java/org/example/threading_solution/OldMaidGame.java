@@ -4,17 +4,17 @@ import org.example.card.Card;
 import org.example.card.CardUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
 import static org.example.card.CardUtils.sortCards;
-
 
 public class OldMaidGame {
     private static List<Player> players;
     private final int numOfPlayers;
     static LinkedList<Player> queue;
 
-    public static HashMap<String, List<Card>> getPlayersHand() {
+    public static ConcurrentHashMap<String, List<Card>> getPlayersHand() {
         return Player.playersHand;
     }
 
@@ -36,7 +36,12 @@ public class OldMaidGame {
         for (int i = 0; i < numOfPlayers; i++) {
             players.add(new Player("Player" + i));
         }
+        initializePlayers();
         distributeCardsForPlayers();
+        addPlayersToQueue();
+    }
+
+    private static void addPlayersToQueue() {
         queue.addAll(players);
     }
 
@@ -66,18 +71,11 @@ public class OldMaidGame {
             e.printStackTrace();
         }
 
-
     }
 
     public void distributeCardsForPlayers() {
         List<Card> cards = CardUtils.getPackOfCards();
         CardUtils.shuffleCards(cards);
-
-        players.forEach(
-                player ->
-                        Player.playersHand.put(player.getName(), new LinkedList<>())
-        );
-
 
         IntStream.range(0, cards.size())
                 .forEach(i -> {
@@ -91,16 +89,17 @@ public class OldMaidGame {
 
     }
 
+    private static void initializePlayers() {
+        players.forEach(
+                player -> Player.playersHand.put(player.getName(), new LinkedList<>()));
+    }
+
     public static void main(String[] args) throws InterruptedException {
 
-
         OldMaidGame oldMaidGame = new OldMaidGame(4);
-
-        // System.out.println("AFTER GAME ---------------------------------");
         oldMaidGame.setupGame();
         oldMaidGame.startGame();
-
-
+        
         for (Player player : players) {
             System.out.print(player.getName());
             System.out.println("  hand-->" + getPlayersHand().get(player.getName()));
